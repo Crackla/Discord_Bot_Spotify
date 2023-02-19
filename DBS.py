@@ -20,19 +20,19 @@ results = []
 check = []
 playlist_list = []
 
-
 @bot.event
 async def on_message(ctx):
     messages = await ctx.channel.history(limit=1).flatten()
     for message in messages:
+        check.clear()
+        results.clear()
         if "https://open.spotify.com/" in message.content:
             spotify_message = message.content.split()[0]
             spotify_link = spotify_message.split("?")[0]
             if spotify_link not in check:
                 check.append(spotify_link)
-
-            playlist = sp.playlist_items(playlist_id, fields=None, limit=100, offset=0, market=None,
-                                         additional_types=("track",))
+            playlist = sp.playlist_items(
+                playlist_id, fields=None, limit=100, offset=0, market=None, additional_types=("track",))
             for item in playlist["items"]:
                 track = item.get("track")
                 if track:
@@ -43,13 +43,12 @@ async def on_message(ctx):
             for song in check:
                 if song not in playlist_list:
                     results.append(song)
+                    if results not in playlist_list:
+                        sp.playlist_add_items(playlist_id, items=results, position=None)
+                        await message.reply("I added the song to the playlist")
+                if song in playlist_list:
+                    await message.reply("Song is already in the playlist")
 
-            if not results:
-                print("song is already in the playlist")
-            else:
-                if results not in playlist_list:
-                    sp.playlist_add_items(playlist_id, items=results, position=None)
-                    print("added a song to the playlist")
 
 
 bot.run(token)
