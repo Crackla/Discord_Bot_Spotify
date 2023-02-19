@@ -36,9 +36,8 @@ async def on_message(ctx):
             playlist = sp.playlist_items(
                 playlist_id, fields=None, limit=100, offset=0, market=None, additional_types=("track",))
             for item in playlist["items"]:
-                track = item.get("track", "id")
-                url_id = (track["id"])
-                track_url = "https://open.spotify.com/track/" + url_id
+                track_id = (item["track"]["id"])
+                track_url = "https://open.spotify.com/track/" + track_id
                 if track_url not in playlist_list:
                     playlist_list.append(track_url)
             for song in results:
